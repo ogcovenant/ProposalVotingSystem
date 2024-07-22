@@ -4,6 +4,7 @@ pragma solidity ^0.8.26;
 
 contract ProposalContract {
     uint256 private counter;
+    address owner;
 
     struct Proposal {
         string title;
@@ -18,8 +19,17 @@ contract ProposalContract {
 
     mapping(uint256 => Proposal) proposal_history;
 
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner of this contract can create a proposal");
+        _;
+    }
+
     function create(string calldata _title, string calldata _description, uint256 _total_vote_to_end)
-        external
+        external onlyOwner
     {
         counter += 1;
         proposal_history[counter] = Proposal(
@@ -33,4 +43,10 @@ contract ProposalContract {
             true
         );
     }
+
+    function changeOwner( address new_owner ) external onlyOwner {
+        owner = new_owner;
+    }
+
+    
 }
